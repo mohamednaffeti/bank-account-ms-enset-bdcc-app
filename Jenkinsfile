@@ -7,6 +7,25 @@ pipeline {
     }
 
     stages {
+        stage('Setup Maven') {
+            steps {
+                script {
+                    echo "Checking if Maven is installed..."
+                    // Vérification et installation de Maven si nécessaire
+                    def mavenCheck = sh(script: 'mvn -v || echo "MavenNotInstalled"', returnStdout: true).trim()
+                    if (mavenCheck.contains("MavenNotInstalled")) {
+                        echo "Maven is not installed. Installing Maven..."
+                        sh '''
+                        apt-get update
+                        apt-get install -y maven
+                        '''
+                    } else {
+                        echo "Maven is already installed."
+                    }
+                }
+            }
+        }
+
         stage('Checkout Code') {
             steps {
                 echo "Cloning the repository..."
@@ -19,7 +38,6 @@ pipeline {
                 script {
                     echo "Building Discovery Service..."
                     dir('discovery-service') {
-                        // Compile Discovery Service (ex: avec Maven)
                         sh 'mvn clean install -DskipTests'
                     }
                 }
@@ -31,7 +49,6 @@ pipeline {
                 script {
                     echo "Building Config Service..."
                     dir('config-service') {
-                        // Compile Config Service (ex: avec Maven)
                         sh 'mvn clean install -DskipTests'
                     }
                 }
@@ -43,7 +60,6 @@ pipeline {
                 script {
                     echo "Building Customer Service..."
                     dir('customer-service') {
-                        // Compile Customer Service (ex: avec Maven)
                         sh 'mvn clean install -DskipTests'
                     }
                 }
@@ -55,7 +71,6 @@ pipeline {
                 script {
                     echo "Building Account Service..."
                     dir('account-service') {
-                        // Compile Account Service (ex: avec Maven)
                         sh 'mvn clean install -DskipTests'
                     }
                 }
@@ -67,7 +82,6 @@ pipeline {
                 script {
                     echo "Building Gateway Service..."
                     dir('gateway-service') {
-                        // Compile Gateway Service (ex: avec Maven)
                         sh 'mvn clean install -DskipTests'
                     }
                 }
@@ -78,7 +92,6 @@ pipeline {
             steps {
                 script {
                     echo "Building Docker images for all services..."
-                    // Construire les images Docker avec Docker Compose
                     sh 'docker-compose build'
                 }
             }
@@ -88,7 +101,6 @@ pipeline {
             steps {
                 script {
                     echo "Deploying services with Docker Compose..."
-                    // Arrêter les conteneurs existants et relancer les services avec Docker Compose
                     sh """
                     docker-compose down
                     docker-compose up -d
