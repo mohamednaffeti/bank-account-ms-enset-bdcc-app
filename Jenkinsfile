@@ -4,6 +4,7 @@ pipeline {
     environment {
         COMPOSE_FILE = "docker-compose.yml"
         GIT_URL = 'https://github.com/mohamednaffeti/bank-account-ms-enset-bdcc-app.git'
+        MAVEN_HOME = tool name: 'Maven 3.9.9', type: 'Maven'  // Utilisation de Maven 3.9.9 configuré dans Jenkins
     }
 
     stages {
@@ -19,8 +20,8 @@ pipeline {
                 script {
                     echo "Building Discovery Service..."
                     dir('discovery-service') {
-                        // Compile Discovery Service (ex: avec Maven)
-                        sh 'mvn clean install -DskipTests'
+                        // Compiler le service Discovery (avec Maven)
+                        sh "'${MAVEN_HOME}/bin/mvn' clean install -DskipTests"
                     }
                 }
             }
@@ -31,8 +32,8 @@ pipeline {
                 script {
                     echo "Building Config Service..."
                     dir('config-service') {
-                        // Compile Config Service (ex: avec Maven)
-                        sh 'mvn clean install -DskipTests'
+                        // Compiler le service Config (avec Maven)
+                        sh "'${MAVEN_HOME}/bin/mvn' clean install -DskipTests"
                     }
                 }
             }
@@ -43,8 +44,8 @@ pipeline {
                 script {
                     echo "Building Customer Service..."
                     dir('customer-service') {
-                        // Compile Customer Service (ex: avec Maven)
-                        sh 'mvn clean install -DskipTests'
+                        // Compiler le service Customer (avec Maven)
+                        sh "'${MAVEN_HOME}/bin/mvn' clean install -DskipTests"
                     }
                 }
             }
@@ -55,8 +56,8 @@ pipeline {
                 script {
                     echo "Building Account Service..."
                     dir('account-service') {
-                        // Compile Account Service (ex: avec Maven)
-                        sh 'mvn clean install -DskipTests'
+                        // Compiler le service Account (avec Maven)
+                        sh "'${MAVEN_HOME}/bin/mvn' clean install -DskipTests"
                     }
                 }
             }
@@ -67,8 +68,8 @@ pipeline {
                 script {
                     echo "Building Gateway Service..."
                     dir('gateway-service') {
-                        // Compile Gateway Service (ex: avec Maven)
-                        sh 'mvn clean install -DskipTests'
+                        // Compiler le service Gateway (avec Maven)
+                        sh "'${MAVEN_HOME}/bin/mvn' clean install -DskipTests"
                     }
                 }
             }
@@ -101,7 +102,7 @@ pipeline {
     post {
         always {
             echo "Cleaning workspace..."
-            cleanWs()
+            cleanWs()  // Nettoyer le workspace à la fin du pipeline
         }
     }
 }
