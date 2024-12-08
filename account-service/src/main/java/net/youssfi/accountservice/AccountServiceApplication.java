@@ -7,6 +7,7 @@ import net.youssfi.accountservice.repository.BankAccountRepository;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.cache.annotation.EnableCaching;
 import org.springframework.cloud.openfeign.EnableFeignClients;
 import org.springframework.context.annotation.Bean;
 
@@ -15,6 +16,7 @@ import java.util.UUID;
 
 @SpringBootApplication
 @EnableFeignClients
+@EnableCaching
 public class AccountServiceApplication {
 
     public static void main(String[] args) {
