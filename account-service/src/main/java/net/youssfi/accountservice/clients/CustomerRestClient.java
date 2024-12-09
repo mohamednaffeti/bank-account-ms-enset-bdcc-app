@@ -20,7 +20,7 @@ public interface CustomerRestClient {
     @GetMapping("/customers")
     @CircuitBreaker(name = "CustomerServiceCB",fallbackMethod = "getDefaultCustomers")
     @Retry(name = "CustomerServiceRetry", fallbackMethod = "getDefaultCustomers")
-    @Cacheable(value = "customerCache")  // La liste entière des customers peut être mise en cache avec une clé globale
+    @Cacheable(value = "customerCache",key = "#root.methodName")  // La liste entière des customers peut être mise en cache avec une clé globale
     List<Customer> allCustomers();
 
 
