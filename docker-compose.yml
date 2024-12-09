@@ -1,4 +1,15 @@
 services:
+  enset-admine-service:
+    build: ./admin-service
+    container_name: enset-admine-service
+    ports:
+      - '8080:8080'
+    expose:
+      - '8080'
+    healthcheck:
+      test: [ "CMD", "curl", "-f", "http://localhost:8080/actuator/health" ]
+      interval: 10s
+      retries: 4
   enset-ebank-discovery-service:
     build: ./discovery-service
     container_name: enset-ebank-discovery-service
@@ -6,10 +17,15 @@ services:
       - '8761:8761'
     expose:
       - '8761'
+    environment:
+      - ADMIN_SERVICE_URL=http://enset-admine-service:8080
     healthcheck:
       test: [ "CMD", "curl", "-f", "http://localhost:8761/actuator/health" ]
       interval: 10s
       retries: 4
+    depends_on:
+      enset-admine-service:
+        condition: service_healthy
   enset-ebank-config-service:
     build: ./config-service
     container_name: enset-ebank-config-service
@@ -19,6 +35,7 @@ services:
       - '9999'
     environment:
       - DISCOVERY_SERVICE_URL=http://enset-ebank-discovery-service:8761/eureka
+      - ADMIN_SERVICE_URL=http://enset-admine-service:8080
     healthcheck:
       test: [ "CMD", "curl", "-f", "http://localhost:9999/actuator/health" ]
       interval: 10s
@@ -36,12 +53,15 @@ services:
     environment:
       - DISCOVERY_SERVICE_URL=http://enset-ebank-discovery-service:8761/eureka
       - CONFIG_SERVICE_URL=http://enset-ebank-config-service:9999
+      - ADMIN_SERVICE_URL=http://enset-admine-service:8080
     healthcheck:
       test: [ "CMD", "curl", "-f", "http://localhost:8081/actuator/health" ]
       interval: 10s
       retries: 4
     depends_on:
       enset-ebank-config-service:
+        condition: service_healthy
+      enset-admine-service:
         condition: service_healthy
   enset-account-service:
     build: ./account-service
@@ -53,8 +73,11 @@ services:
     environment:
       - DISCOVERY_SERVICE_URL=http://enset-ebank-discovery-service:8761/eureka
       - CONFIG_SERVICE_URL=http://enset-ebank-config-service:9999
+      - ADMIN_SERVICE_URL=http://enset-admine-service:8080
     depends_on:
       enset-customer-service:
+        condition: service_healthy
+      enset-admine-service:
         condition: service_healthy
   enset-gateway-service:
     build: ./gateway-service
@@ -66,6 +89,8 @@ services:
     environment:
       - DISCOVERY_SERVICE_URL=http://enset-ebank-discovery-service:8761/eureka
       - CONFIG_SERVICE_URL=http://enset-ebank-config-service:9999
+      - ADMIN_SERVICE_URL=http://enset-admine-service:8080
     depends_on:
       enset-ebank-config-service:
         condition: service_healthy
+

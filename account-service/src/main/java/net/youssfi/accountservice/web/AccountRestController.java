@@ -1,5 +1,6 @@
 package net.youssfi.accountservice.web;
 
+import lombok.extern.slf4j.Slf4j;
 import net.youssfi.accountservice.clients.CustomerRestClient;
 import net.youssfi.accountservice.entities.BankAccount;
 import net.youssfi.accountservice.model.Customer;
@@ -11,6 +12,7 @@ import org.springframework.web.bind.annotation.RestController;
 import java.util.List;
 
 @RestController
+@Slf4j
 public class AccountRestController {
     private BankAccountRepository accountRepository;
     private CustomerRestClient customerRestClient;
@@ -22,6 +24,7 @@ public class AccountRestController {
     }
     @GetMapping("/accounts")
     public List<BankAccount> accountList(){
+        log.info("there is our account list");
         List<BankAccount> accountList = accountRepository.findAll();
         accountList.forEach(acc->{
             acc.setCustomer(customerRestClient.findCustomerById(acc.getCustomerId()));
